@@ -1,6 +1,7 @@
 import os
 
 from azure.cli.core import get_default_cli
+from simple_term_menu import TerminalMenu
 
 
 class AzCommandHandler:
@@ -17,6 +18,12 @@ class AzCommandHandler:
                 return result.result
             else:
                 raise result.error
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, *args):
+        pass
 
     @property
     def command(self):
@@ -36,3 +43,16 @@ class AzCommandHandler:
             return self._send_command()
         except:
             print("Something went wrong with the query")
+
+
+class CommandHandler:
+    def __init__(self, commands):
+        self.commands = commands
+
+    def _run_menu(self):
+        pass
+
+
+def choice_menu(options: list) -> str:
+    menu = TerminalMenu(options)
+    return menu.show()

@@ -1,20 +1,9 @@
-import requests_cache
-from simple_term_menu import TerminalMenu
-
-from src.utils import AzCommandHandler
-
-requests_cache.install_cache(cache_name='az_cache', backend='sqlite', expire_after=180)
-
-def choice_menu(options: list) -> str:
-    menu = TerminalMenu(options)
-    return options[menu.show()]
-
-
-if __name__ == "__main__":
-    cli = AzCommandHandler()
-    cli.command="account list"
-
-    print(cli.result)
-
-    choice = choice_menu('dit is een test'.split())
-    print(choice)
+commands = {
+    "switch_default_subscription": [
+        ("az_data_command", "account list"),
+        ("filter", lambda x: {k:v for k,v in x.items() if k in ['name']}),
+        ("menu", "name"),
+        ("az_set_command", "account set --subscription {name}")
+    ]
+}
+# TODO: make definitions for more common taks here
