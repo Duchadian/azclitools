@@ -4,10 +4,21 @@ from azure.cli.core import get_default_cli
 from simple_term_menu import TerminalMenu
 
 
-class AzCommandHandler:
+class PipelineItem:
     def __init__(self):
-        self.cli = get_default_cli()
         self._result = None
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, *args):
+        pass
+
+
+class AzCommandHandler(PipelineItem):
+    def __init__(self):
+        super().__init__()
+        self.cli = get_default_cli()
 
     def _send_command(self, force=False):
         with open(os.devnull, 'w') as out:
@@ -18,12 +29,6 @@ class AzCommandHandler:
                 return result.result
             else:
                 raise result.error
-
-    def __enter__(self):
-        pass
-
-    def __exit__(self, *args):
-        pass
 
     @property
     def command(self):
@@ -45,14 +50,24 @@ class AzCommandHandler:
             print("Something went wrong with the query")
 
 
-class CommandHandler:
-    def __init__(self, commands):
-        self.commands = commands
+class MenuHandler(PipelineItem):
+    def __init__(self, options: list):
+        super().__init__()
+        self._menu = TerminalMenu(options)
 
-    def _run_menu(self):
-        pass
+    @property
+    def result(self):
+        return self._result
+
+    @result.getter
+    def result(self):
+        if not self._result:
+            self._open_menu()
+        return self._result
+
+    def _open_menu(self) -> str: 
+        self._result = self._menu.show()
 
 
-def choice_menu(options: list) -> str:
-    menu = TerminalMenu(options)
-    return menu.show()
+def format_name(name: str) -> str:
+    return " ".join(map(lambda s: s.capitalize(), name.split('_')))

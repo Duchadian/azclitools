@@ -1,6 +1,6 @@
 import requests_cache
 
-from src.utils import AzCommandHandler, choice_menu
+from src.utils import AzCommandHandler, MenuHandler, format_name
 from src.azclitools import commands
 
 requests_cache.install_cache(
@@ -9,20 +9,18 @@ requests_cache.install_cache(
     expire_after=180
 )
 
-
-def format_name(name: str) -> str:
-    return " ".join(map(lambda s: s.capitalize(), name.split('_')))
-
-
 if __name__ == "__main__":
-    choice = choice_menu([format_name(i) for i in commands])
+    choice = MenuHandler(
+        options=[format_name(i) for i in commands]
+    ).result
 
     execute = commands[list(commands.keys())[choice]]
+    print(execute)
 
     cli = AzCommandHandler()
     cli.command = execute['az_data_command']
     filtered = map(execute['filter'], cli.result)
 
-    menu_result = choice_menu(filtered)
+    # menu_result = choice_menu(filtered)
     print(filtered)
-    print(menu_result)
+    # print(menu_result)
